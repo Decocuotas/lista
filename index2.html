@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga tu Lista de Precios</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a softer look */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white bg-opacity-80 p-8 md:p-12 rounded-xl shadow-lg max-w-md w-full text-center">
+        <!-- Logo Section -->
+        <div class="mb-8">
+            <!-- Puedes reemplazar este div con tu etiqueta <img> para tu logo -->
+            <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-lg font-bold shadow-inner">
+                <img src="/Deco.png" alt="logo" class="rounded-full w-full h-full object-cover">
+                <!-- Ejemplo de cómo podrías usar una imagen: -->
+                <!-- <img src="https://placehold.co/128x128/e0e0e0/555555?text=LOGO" alt="Logo de la empresa" class="rounded-full w-full h-full object-cover"> -->
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-extrabold text-gray-800 mb-6">Descarga tu Lista de Precios</h2>
+
+        <form id="mailForm" class="space-y-6">
+            <input
+                type="email"
+                id="email"
+                placeholder="Ingresa tu email"
+                required
+                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-transparent text-gray-700 placeholder-gray-400"
+            />
+            <button
+                type="submit"
+                class="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white font-semibold py-3 rounded-lg shadow-md hover:from-purple-500 hover:to-pink-500 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-300"
+            >
+                Descargar lista de precios
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('mailForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Previene el envío del formulario por defecto
+            const email = document.getElementById('email').value;
+
+            // URL de tu Apps Script (asegúrate de reemplazar con tu URL real)
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxZ6ckwKlkW11t1wIAm-dFM7UghBIPry3Fo1wbc8kN3AWkdWesH7QcmBUXI82ECDkTuVw/exec'; // Reemplaza con tu URL real de Apps Script
+
+            // Muestra un mensaje de carga o deshabilita el botón mientras se envía
+            const submitButton = document.querySelector('#mailForm button[type="submit"]');
+            submitButton.textContent = 'Enviando...';
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-70', 'cursor-not-allowed');
+
+            fetch(scriptURL, {
+                method: 'POST',
+                // Asegúrate de que el cuerpo de la solicitud sea compatible con tu Apps Script
+                body: new URLSearchParams({ 'email': email })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // ✅ Redirige a tu archivo Excel tras guardar el mail
+                    // Reemplaza con la URL real de tu archivo Excel
+                    window.location.href = 'https://docs.google.com/spreadsheets/d/1RcZfkAvEdVlSwkHeTnriAwF2vw5EXPrTRvewXZiGPDw/edit?usp=sharing';
+                } else {
+                    // Manejo de errores si la respuesta no es OK
+                    console.error('Error en la respuesta del servidor:', response.statusText);
+                    // Muestra un mensaje de error al usuario (puedes usar un modal personalizado en lugar de alert)
+                    alert('Hubo un problema al guardar tu email. Por favor, inténtalo de nuevo.');
+                }
+            })
+            .catch(error => {
+                console.error('Error al enviar el formulario:', error);
+                // Muestra un mensaje de error al usuario (puedes usar un modal personalizado en lugar de alert)
+                alert('Error de conexión. Intenta nuevamente.');
+            })
+            .finally(() => {
+                // Restaura el botón a su estado original
+                submitButton.textContent = 'Descargar lista de precios';
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-70', 'cursor-not-allowed');
+            });
+        });
+    </script>
+</body>
+</html>
